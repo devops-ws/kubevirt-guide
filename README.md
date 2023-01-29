@@ -1,5 +1,15 @@
 # kubevirt-guide
 
+```shell
+export VERSION=v0.58.0
+kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${VERSION}/kubevirt-operator.yaml
+kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${VERSION}/kubevirt-cr.yaml
+```
+
+```shell
+hd i virtctl
+```
+
 ## Debian
 ```shell
 cat <<EOF | kubectl apply -f -
@@ -49,6 +59,11 @@ spec:
                   root:root
                 expire: False
 EOF
+```
+
+```shell
+virtctl start debian
+virtctl console debian
 ```
 
 ## 参考
