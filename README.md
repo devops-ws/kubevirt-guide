@@ -157,5 +157,9 @@ spec:
 EOF
 ```
 
+```
+virt-install    --name=guest-name    --network network=default    --disk path=win.img,size=8    --boot=cdrom    --cdrom=JZ_WIN10_X64_V2023.02.iso    --osinfo detect=on,name=win10    --graphics spice --ram=1024
+```
+
 ## 参考
 * [系统镜像](https://github.com/Tedezed/kubevirt-images-generator)
