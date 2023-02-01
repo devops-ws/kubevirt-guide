@@ -97,7 +97,7 @@ spec:
   type: NodePort
 EOF
 
-virtctl image-upload --image-path JZ_WIN10_X64_V2023.02.iso --pvc-name=win11 --uploadproxy-url https://localhost:30001 --insecure --access-mode=ReadWriteOnce --pvc-size=7G
+virtctl image-upload --image-path JZ_WIN10_X64_V2023.02.iso --pvc-name=win11 --uploadproxy-url https://localhost:30001 --insecure --access-mode=ReadWriteMany --pvc-size=7G
 
 kubectl apply -f - <<EOF
 apiVersion: v1
