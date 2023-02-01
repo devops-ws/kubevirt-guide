@@ -7,7 +7,7 @@ ARG OS_VERSION="36"
 ARG IMAGE_URL="https://ftp.cica.es/fedora/linux/releases/36/Cloud/x86_64/images/Fedora-Cloud-Base-36-1.5.x86_64.qcow2"
 ARG FILE_NAME="os_xxx.img"
 ARG IMAGE_NAME="os_xxx"
-ARG IMAGE_EXTENSION="img"
+ARG IMAGE_EXTENSION="qcow2"
 
 RUN echo "Download: $IMAGE_URL FILE: $FILE_NAME"; \
 	set -x \
@@ -20,6 +20,27 @@ RUN KEY_LOOP="true"; \
 while [ $KEY_LOOP == "true" ]; do \
 	echo "Process extension: $IMAGE_EXTENSION"; \
 	if [ "$IMAGE_EXTENSION" == "qcow2" ] ; then \
+        modprobe nbd; \
+
+        qemu-nbd --connect=/dev/nbd0 /disk/$FILE_NAME; \
+
+        mkdir /mnt/ubuntu; \
+
+        mount /dev/nbd0p1 /mnt/ubuntu; \
+
+        mount -t proc proc /mnt/ubuntu/proc/; \
+
+        chroot /mnt/ubuntu dnf -y install dnf-plugins-core; \
+        chroot /mnt/ubuntu dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo; \
+        chroot /mnt/ubuntu dnf install docker-ce docker-ce-cli containerd.io docker-compose-plugin; \
+
+        umount /mnt/ubuntu/proc; \
+
+        sync; \
+
+        umount /mnt/ubuntu; \
+        qemu-nbd --disconnect /dev/nbd0; \
+
 		qemu-img convert -f qcow2 -O raw /disk/$FILE_NAME /disk/$OS_NAME.img; \
 		rm -rf /disk/$FILE_NAME; \
 		KEY_LOOP="false"; \
