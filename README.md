@@ -66,5 +66,96 @@ virtctl start debian
 virtctl console debian
 ```
 
+## 上传 ISO
+```shell
+export CDI=v1.48.1
+kubectl apply -f https://github.com/kubevirt/containerized-data-importer/releases/download/${CDI}/cdi-operator.yaml
+kubectl apply -f https://github.com/kubevirt/containerized-data-importer/releases/download/${CDI}/cdi-cr.yaml
+
+kubectl apply -f - <<EOF 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    cdi.kubevirt.io: cdi-uploadproxy
+  name: cdi-uploadproxy-nodeport
+  namespace: cdi
+spec:
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - nodePort: 31001
+    port: 443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    cdi.kubevirt.io: cdi-uploadproxy
+  sessionAffinity: None
+  type: NodePort
+EOF
+
+virtctl image-upload --image-path JZ_WIN10_X64_V2023.02.iso --pvc-name=win11 --uploadproxy-url https://localhost:30001 --insecure --access-mode=ReadWriteOnce --pvc-size=7G
+
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: winhd
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 35Gi
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: iso-win10
+spec:
+  running: false
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: iso-win10
+    spec:
+      domain:
+        cpu:
+          cores: 6
+        devices:
+          disks:
+          - bootOrder: 1
+            cdrom:
+              bus: sata
+            name: cdromiso
+          - bootOrder: 2
+            disk:
+              bus: virtio
+            name: harddrive
+          - bootOrder: 3
+            cdrom:
+              bus: sata
+            name: virtiocontainerdisk
+        machine:
+          type: q35
+        resources:
+          requests:
+            memory: 2G
+      volumes:
+      - name: cdromiso
+        persistentVolumeClaim:
+          claimName: win11
+      - name: harddrive
+        persistentVolumeClaim:
+          claimName: winhd
+      - containerDisk:
+          image: quay.io/kubevirt/virtio-container-disk
+        name: virtiocontainerdisk
+EOF
+```
+
 ## 参考
 * [系统镜像](https://github.com/Tedezed/kubevirt-images-generator)
