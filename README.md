@@ -62,7 +62,7 @@ spec:
                 - apt-get update -y
                 - apt-get install docker-ce docker-ce-cli containerd.io -y
                 - curl https://linuxsuren.github.io/tools/install.sh|bash
-                - hd i k3d
+                - hd i k3d --proxy-github ghproxy.com
               chpasswd:
                 list: |
                   debian:debian
