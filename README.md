@@ -173,3 +173,5 @@ virt-install    --name=guest-name    --network network=default    --disk path=wi
 
 ## 参考
 * [系统镜像](https://github.com/Tedezed/kubevirt-images-generator)
+* https://www.ebaina.com/articles/140000014992
+
