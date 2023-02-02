@@ -9,6 +9,8 @@ wget https://ftp.cica.es/fedora/linux/releases/36/Cloud/x86_64/images/Fedora-Clo
 export LIBGUESTFS_BACKEND=direct
 
 virt-customize -a Fedora-Cloud-Base-36-1.5.x86_64.qcow2 --install [dnf-plugins-core]
+virt-customize -a Fedora-Cloud-Base-36-1.5.x86_64.qcow2 --mkdir /etc/apt/keyrings
+virt-customize -a Fedora-Cloud-Base-36-1.5.x86_64.qcow2 --run-command "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg"
 ```
 
 ## 上传文件
