@@ -175,4 +175,5 @@ virt-install    --name=guest-name    --network network=default    --disk path=wi
 * [系统镜像](https://github.com/Tedezed/kubevirt-images-generator)
 * https://www.ebaina.com/articles/140000014992
 * [clound-init](https://cloudinit.readthedocs.io/en/latest/)
+* [How to Create a Custom Windows 11 Install Disk, With Only the Features You Need](https://www.tomshardware.com/how-to/create-custom-windows-11-install-disk)
 
